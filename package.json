@@ -1,0 +1,27 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "Tic tac toe app with websockets",
+  "main": "index.js",
+  "author": "Zachary LeBlanc",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev": "concurrently \"yarn --cwd ./server dev\" \"yarn --cwd ./client dev\"",
+    "prestart": "yarn --cwd ./client build",
+    "start": "yarn --cwd ./server start",
+    "test": "yarn --cwd ./server test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^5.0.2",
+    "eslint": "^6.8.0",
+    "husky": "^4.0.10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test",
+      "pre-push": "yarn test --ci"
+    }
+  }
+}
