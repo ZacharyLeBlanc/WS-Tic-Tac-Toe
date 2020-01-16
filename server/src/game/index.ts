@@ -1,127 +1,133 @@
 export default class Game {
-  static Games = new Map<string, Game>();
+  private static Games = new Map<string, Game>();
+  private static BOARD_SIZE: number = 3;
 
-  static getGame = (room: string): Game => Game.Games.get(room);
+  public static getGame = (room: string): Game => Game.Games.get(room);
 
-  board: string[][] = [
+  private _board: string[][] = [
     ["", "", ""],
     ["", "", ""],
     ["", "", ""],
   ];
-  isGameOver: boolean = false;
-  isTie: boolean = null;
-  moveCount: number = 0;
-  playerOne: string = null;
-  playerTwo: string = null;
-  turn: string = null;
-  winner: string = null;
+  private _isGameOver: boolean = false;
+  private _isTie: boolean = null;
+  private _moveCount: number = 0;
+  private _playerOne: string = null;
+  private _playerTwo: string = null;
+  private _turn: string = null;
+  private _winner: string = null;
 
-  constructor(players: string[], room: string) {
+  constructor(players: [string, string], room: string) {
     const randomPlayerIndex: number = Math.floor(Math.random() * 2);
-    this.playerOne = players[randomPlayerIndex];
-    this.turn = players[randomPlayerIndex];
-    this.playerTwo = players[+!randomPlayerIndex];
+    this._playerOne = players[randomPlayerIndex];
+    this._turn = players[randomPlayerIndex];
+    this._playerTwo = players[+!randomPlayerIndex];
     Game.Games.set(room, this);
   }
 
-  move = (
-    { x, y }: { x: number; y: number },
-    playerId: string,
-  ): {
-    board: string[][];
-    playerOne: string;
-    playerTwo: string;
-    turn: string;
-    winner: string;
-  } => {
-    if (!this.isGameOver) {
-      if (this.turn === playerId) {
+  get board(): string[][] {
+    return this._board;
+  }
+
+  get isGameOver(): boolean {
+    return this._isGameOver;
+  }
+
+  get isTie(): boolean {
+    return this._isTie;
+  }
+
+  get moveCount(): number {
+    return this._moveCount;
+  }
+
+  get playerOne(): string {
+    return this._playerOne;
+  }
+
+  get playerTwo(): string {
+    return this._playerTwo;
+  }
+
+  get turn(): string {
+    return this._turn;
+  }
+
+  get winner(): string {
+    return this._winner;
+  }
+
+  private handleWinner(playerId: string) {
+    this._winner = playerId;
+    this._isGameOver = true;
+  }
+
+  public move({ x, y }: { x: number; y: number }, playerId: string): Game {
+    // Validate that the game is not over and that the currect player is making their turn.
+    if (!this.isGameOver && this.turn === playerId) {
+      // Validate that this position on the board is valid.
+      if (x < 3 && y < 3 && !this.board[x][y]) {
         const isPlayerOne: boolean = this.playerOne === this.turn;
         const symbol: string = isPlayerOne ? "X" : "O";
-        if (!this.board[x][y]) {
-          this.board[x][y] = symbol;
-          const board: string[][] = this.board;
-          const n = 3;
-          const s: string = symbol;
-          // check col
-          for (let i = 0; i < n; i++) {
-            if (board[x][i] !== s) {
-              break;
-            }
-            if (i === n - 1) {
-              this.winner = this.turn;
-              this.isGameOver = true;
-            }
+        const board: string[][] = this.board;
+        // Make players turn
+        board[x][y] = symbol;
+        this._moveCount++;
+        // Determine if there is a winner.
+        // Columns
+        for (let i = 0; i < Game.BOARD_SIZE; i++) {
+          if (board[x][i] !== symbol) {
+            break;
           }
-
-          // check row
-          for (let i = 0; i < n; i++) {
-            if (board[i][y] !== s) {
-              break;
-            }
-            if (i === n - 1) {
-              this.winner = this.turn;
-              this.isGameOver = true;
-            }
-          }
-
-          // check diag
-          if (x === y) {
-            // we're on a diagonal
-            for (let i = 0; i < n; i++) {
-              if (board[i][i] !== s) {
-                break;
-              }
-              if (i === n - 1) {
-                this.winner = this.turn;
-                this.isGameOver = true;
-              }
-            }
-          }
-
-          // check anti diag (thanks rampion)
-          if (x + y === n - 1) {
-            for (let i = 0; i < n; i++) {
-              if (board[i][n - 1 - i] !== s) {
-                break;
-              }
-              if (i === n - 1) {
-                this.winner = this.turn;
-                this.isGameOver = true;
-              }
-            }
-          }
-
-          // check draw
-          if (this.moveCount == Math.pow(n, 2) - 1) {
-            this.isTie = true;
-            this.isGameOver = true;
-          }
-
-          if (isPlayerOne) {
-            this.turn = this.playerTwo;
-          } else {
-            this.turn = this.playerOne;
+          if (i === Game.BOARD_SIZE - 1) {
+            this.handleWinner(this.turn);
+            return this;
           }
         }
+        // Rows
+        for (let i = 0; i < Game.BOARD_SIZE; i++) {
+          if (board[i][y] !== symbol) {
+            break;
+          }
+          if (i === Game.BOARD_SIZE - 1) {
+            this.handleWinner(this.turn);
+            return this;
+          }
+        }
+        // Diagonal
+        if (x === y) {
+          for (let i = 0; i < Game.BOARD_SIZE; i++) {
+            if (board[i][i] !== symbol) {
+              break;
+            }
+            if (i === Game.BOARD_SIZE - 1) {
+              this.handleWinner(this.turn);
+              return this;
+            }
+          }
+        }
+        // Reverse Diagonal
+        if (x + y === Game.BOARD_SIZE - 1) {
+          for (let i = 0; i < Game.BOARD_SIZE; i++) {
+            if (board[i][Game.BOARD_SIZE - 1 - i] !== symbol) {
+              break;
+            }
+            if (i === Game.BOARD_SIZE - 1) {
+              this.handleWinner(this.turn);
+              return this;
+            }
+          }
+        }
+        // Determine if there is a draw.
+        if (this.moveCount === Math.pow(Game.BOARD_SIZE, 2) - 1) {
+          this._isTie = true;
+          this._isGameOver = true;
+          return this;
+        }
+        // Change turns
+        this._turn = isPlayerOne ? this.playerTwo : this.playerOne;
       }
-      this.moveCount++;
     }
     return this;
-  };
-
-  reset = () => {
-    this.board = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ];
-    this.isGameOver = false;
-    this.isTie = null;
-    this.moveCount = 0;
-    this.playerOne = null;
-    this.playerTwo = null;
-    this.turn = null;
-    this.winner = null;
-  };
+  }
 }

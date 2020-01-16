@@ -1,3 +1,197 @@
-test("adds 1 + 2 to equal 3", () => {
-  expect(1 + 2).toBe(3);
+import Game from "./index";
+
+describe("Game Tests", () => {
+  const PLAYER_ONE: string = "PlayerOne";
+  const PLAYER_TWO: string = "PlayerTwo";
+  const ROOM_ID: string = "RoomID";
+  it("Should create a new game", () => {
+    const {
+      playerOne,
+      playerTwo,
+      turn,
+    }: { playerOne: string; playerTwo: string; turn: string } = new Game(
+      [PLAYER_ONE, PLAYER_TWO],
+      ROOM_ID,
+    );
+    const isTurnAPlayer: boolean = [playerOne, playerTwo].includes(turn);
+    expect(isTurnAPlayer).toBe(true);
+    expect(Game.getGame("RoomID")).not.toBeNull();
+  });
+
+  describe("Game Logic Tests", () => {
+    it("should place the move on the board", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const { turn }: { turn: string } = game;
+      const symbol: string = game.turn === game.playerOne ? "X" : "O";
+      const newBoard: string[][] = [
+        [symbol, "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ];
+      game.move({ x: 0, y: 0 }, turn);
+      expect(game.board).toEqual(newBoard);
+    });
+
+    it("should switch turns after valid move", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const { turn }: { turn: string } = game;
+      game.move({ x: 7, y: 0 }, turn);
+      expect(game.turn).toEqual(turn);
+      game.move({ x: 0, y: 0 }, turn);
+      expect(game.turn).toEqual(
+        [PLAYER_ONE, PLAYER_TWO].find((player: string) => player !== turn),
+      );
+    });
+
+    it("should validate board position", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const {
+        board,
+        moveCount,
+        turn,
+      }: { board: string[][]; moveCount: number; turn: string } = game;
+      game.move({ x: 7, y: 0 }, turn);
+      expect(game.board).toEqual(board);
+      expect(game.moveCount).toEqual(moveCount);
+      expect(game.turn).toEqual(turn);
+    });
+
+    it("should increment move count on valid turn", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const { moveCount, turn }: { moveCount: number; turn: string } = game;
+      game.move({ x: 7, y: 0 }, turn);
+      expect(game.moveCount).toEqual(moveCount);
+      game.move({ x: 0, y: 0 }, turn);
+      expect(game.moveCount).toEqual(moveCount + 1);
+    });
+
+    it("should do nothing after the game ends", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn: string = game.turn;
+      for (let i = 0; i < 3; i++) {
+        game.move({ x: 0, y: i }, turn);
+        if (i < 3) {
+          turn = game.turn;
+          game.move({ x: 1, y: i }, turn);
+          turn = game.turn;
+        }
+      }
+      expect(game.isGameOver).toBe(true);
+      expect(game.winner).toBe(turn);
+      const {
+        board,
+        moveCount,
+        turn: finalTurn,
+      }: { board: string[][]; moveCount: number; turn: string } = game;
+      game.move({ x: 0, y: 0 }, PLAYER_ONE);
+      expect(game.board).toEqual(board);
+      expect(game.moveCount).toEqual(moveCount);
+      expect(game.turn).toEqual(finalTurn);
+      game.move({ x: 0, y: 0 }, PLAYER_TWO);
+      expect(game.board).toEqual(board);
+      expect(game.moveCount).toEqual(moveCount);
+      expect(game.turn).toEqual(finalTurn);
+    });
+
+    it("should not let wrong player make a move", () => {
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const {
+        board,
+        moveCount,
+        turn,
+      }: { board: string[][]; moveCount: number; turn: string } = game;
+      const wrongPlayer: string = [PLAYER_ONE, PLAYER_TWO].find(
+        (player: string) => turn !== player,
+      );
+      game.move({ x: 0, y: 0 }, wrongPlayer);
+      expect(game.board).toEqual(board);
+      expect(game.moveCount).toEqual(moveCount);
+      expect(game.turn).toEqual(turn);
+      const symbol: string = game.turn === game.playerOne ? "X" : "O";
+      game.move({ x: 0, y: 0 }, turn);
+      const newBoard: string[][] = [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ];
+      newBoard[0][0] = symbol;
+      expect(game.board).toEqual(newBoard);
+      expect(game.moveCount).toEqual(moveCount + 1);
+      expect(game.turn).toEqual(wrongPlayer);
+    });
+
+    it("should check columns for winner", () => {
+      const game1: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const game2: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const game3: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn1: string = game1.turn;
+      let turn2: string = game2.turn;
+      let turn3: string = game3.turn;
+      for (let i = 0; i < 3; i++) {
+        game1.move({ x: 0, y: i }, turn1);
+        game2.move({ x: 1, y: i }, turn2);
+        game3.move({ x: 2, y: i }, turn3);
+        if (i < 3) {
+          turn1 = game1.turn;
+          turn2 = game2.turn;
+          turn3 = game3.turn;
+          game1.move({ x: 1, y: i }, turn1);
+          turn1 = game1.turn;
+          game2.move({ x: 2, y: i }, turn2);
+          turn2 = game2.turn;
+          game3.move({ x: 0, y: i }, turn3);
+          turn3 = game3.turn;
+        }
+      }
+      expect(game1.isGameOver).toBe(true);
+      expect(game1.winner).toBe(turn1);
+      expect(game2.isGameOver).toBe(true);
+      expect(game2.winner).toBe(turn2);
+      expect(game3.isGameOver).toBe(true);
+      expect(game3.winner).toBe(turn3);
+    });
+
+    it("should check rows for winner", () => {
+      const game1: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const game2: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      const game3: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn1: string = game1.turn;
+      let turn2: string = game2.turn;
+      let turn3: string = game3.turn;
+      for (let i = 0; i < 3; i++) {
+        game1.move({ x: i, y: 0 }, turn1);
+        game2.move({ x: i, y: 1 }, turn2);
+        game3.move({ x: i, y: 2 }, turn3);
+        if (i < 3) {
+          turn1 = game1.turn;
+          turn2 = game2.turn;
+          turn3 = game3.turn;
+          game1.move({ x: i, y: 1 }, turn1);
+          turn1 = game1.turn;
+          game2.move({ x: i, y: 2 }, turn2);
+          turn2 = game2.turn;
+          game3.move({ x: i, y: 0 }, turn3);
+          turn3 = game3.turn;
+        }
+      }
+      expect(game1.isGameOver).toBe(true);
+      expect(game1.winner).toBe(turn1);
+      expect(game2.isGameOver).toBe(true);
+      expect(game2.winner).toBe(turn2);
+      expect(game3.isGameOver).toBe(true);
+      expect(game3.winner).toBe(turn3);
+    });
+
+    it("should check diagonal for winner", () => {
+      // TODO: implement this test
+    });
+
+    it("should check reverse diagonal for winner", () => {
+      // TODO: implement this test
+    });
+
+    it("should check for a draw", () => {
+      // TODO: implement this test
+    });
+  });
 });
