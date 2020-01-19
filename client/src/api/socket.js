@@ -4,7 +4,7 @@ const socket = io("__API__", {
   path: "/api",
 });
 
-const connectedSocket = new Promise((resolve, reject) => {
+const connectedSocket = new Promise(resolve => {
   socket.on("connect", () => {
     console.log("connected");
     resolve(socket);

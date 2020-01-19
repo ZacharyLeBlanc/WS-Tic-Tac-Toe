@@ -1,5 +1,5 @@
-import Game from "../game";
-export { default as RoomManager } from "./manager";
+import Game from "../Game";
+export { default as RoomManager } from "./Manager";
 
 export enum RoomStatus {
   EMPTY,
@@ -8,9 +8,9 @@ export enum RoomStatus {
 }
 
 export class Room {
-  numberOfPlayers: number = 0;
+  numberOfPlayers = 0;
   status: RoomStatus = RoomStatus.EMPTY;
-  players: string[] = [];
+  players: [string, string] = ["", ""];
   id: string = null;
   game: Game;
 
@@ -28,7 +28,7 @@ export class Room {
         reject("You are already in this room");
         return;
       }
-      this.players.push(socket.id);
+      this.players[this.numberOfPlayers] = socket.id;
       this.numberOfPlayers++;
       this.status = this.getStatus();
       socket.join(this.id, () => {
@@ -57,7 +57,7 @@ export class Room {
     this.numberOfPlayers = 0;
     this.status = RoomStatus.EMPTY;
     this.players;
-    this.players = [];
+    this.players = ["", ""];
     this.game = null;
   };
 }

@@ -1,6 +1,6 @@
 import socketIo from "socket.io";
 import http from "http";
-import { RoomManager, Room } from "../room";
+import { RoomManager, Room } from "../Room";
 
 const handleJoinRoom = (
   io: socketIo.Server,
@@ -29,11 +29,11 @@ const handleLeaveRoom = (
   const room: Room = RoomManager.getRoomByPlayer(socket.id);
   room?.players.forEach((playerId: string) => {
     if (playerId !== socket.id) {
-      io.sockets.connected[playerId].emit("room:destroy", {
+      io.sockets.connected[playerId]?.emit("room:destroy", {
         data: "Other Player disconnected",
       });
     } else {
-      io.sockets.connected[playerId].emit("room:destroy", {
+      io.sockets.connected[playerId]?.emit("room:destroy", {
         data: "You disconnected",
       });
     }
@@ -62,19 +62,19 @@ const handleConnection = (
     io.to(room.id).emit("game", room.game.move(data, socket.id));
     if (room.game.isGameOver) {
       room.players.forEach((playerId: string) => {
-        io.sockets.connected[playerId].emit("room:destroy", {
-          data: "Room timed out",
-        });
         setTimeout(() => {
+          io.sockets.connected[playerId].emit("room:destroy", {
+            data: "Room timed out",
+          });
           io.sockets.connected[playerId]?.leave(room.id);
+          room.reset();
+          io.emit("room:get", { data: RoomManager.getRooms() });
         }, 60000);
       });
-      room.reset();
-      io.emit("room:get", { data: RoomManager.getRooms() });
     }
   });
 
-  socket.on("disconnecting", (reason: string) => {
+  socket.on("disconnecting", () => {
     handleLeaveRoom(io, socket);
   });
 };

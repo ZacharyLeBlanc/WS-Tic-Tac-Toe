@@ -2,7 +2,13 @@ env:
   browser: true
   es6: true
   node: true
-extends: "eslint:recommended"
+  jest/globals: true
+plugins:
+  - "jest"
+  - "svelte3"
+extends:
+  - "eslint:recommended"
+  - "plugin:jest/recommended"
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -22,3 +28,4 @@ rules:
   semi:
     - error
     - always
+overrides: [{ files: ["**/*.svelte"], processor: "svelte3/svelte3" }]

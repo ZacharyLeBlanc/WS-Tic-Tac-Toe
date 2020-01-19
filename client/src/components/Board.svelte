@@ -10,8 +10,8 @@
   $: winnerText = $game.isTie
     ? "Tie Game!"
     : socketId === $game.winner
-    ? "You won!"
-    : "You lost!";
+      ? "You won!"
+      : "You lost!";
   $: turnText =
     socketId === $game.turn ? "It is your turn." : "It is not your turn.";
 

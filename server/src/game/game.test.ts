@@ -1,9 +1,9 @@
 import Game from "./index";
 
 describe("Game Tests", () => {
-  const PLAYER_ONE: string = "PlayerOne";
-  const PLAYER_TWO: string = "PlayerTwo";
-  const ROOM_ID: string = "RoomID";
+  const PLAYER_ONE = "PlayerOne";
+  const PLAYER_TWO = "PlayerTwo";
+  const ROOM_ID = "RoomID";
   it("Should create a new game", () => {
     const {
       playerOne,
@@ -51,6 +51,10 @@ describe("Game Tests", () => {
         turn,
       }: { board: string[][]; moveCount: number; turn: string } = game;
       game.move({ x: 7, y: 0 }, turn);
+      expect(game.board).toEqual(board);
+      expect(game.moveCount).toEqual(moveCount);
+      expect(game.turn).toEqual(turn);
+      game.move({ x: -1, y: 0 }, turn);
       expect(game.board).toEqual(board);
       expect(game.moveCount).toEqual(moveCount);
       expect(game.turn).toEqual(turn);
@@ -183,15 +187,58 @@ describe("Game Tests", () => {
     });
 
     it("should check diagonal for winner", () => {
-      // TODO: implement this test
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn: string = game.turn;
+      for (let i = 0; i < 3; i++) {
+        game.move({ x: i, y: i }, turn);
+        if (i < 3) {
+          turn = game.turn;
+          game.move({ x: i + 1, y: 0 }, turn);
+          turn = game.turn;
+        }
+      }
+      expect(game.isGameOver).toBe(true);
+      expect(game.winner).toBe(turn);
     });
 
     it("should check reverse diagonal for winner", () => {
-      // TODO: implement this test
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn: string = game.turn;
+      for (let i = 0, j = 2; i < 3 && j >= 0; i++, j--) {
+        game.move({ x: i, y: j }, turn);
+        if (i < 3) {
+          turn = game.turn;
+          game.move({ x: 2, y: i + 1 }, turn);
+          turn = game.turn;
+        }
+      }
+      expect(game.isGameOver).toBe(true);
+      expect(game.winner).toBe(turn);
     });
 
     it("should check for a draw", () => {
-      // TODO: implement this test
+      const game: Game = new Game([PLAYER_ONE, PLAYER_TWO], ROOM_ID);
+      let turn: string = game.turn;
+      game.move({ x: 0, y: 0 }, turn);
+      turn = game.turn;
+      game.move({ x: 1, y: 0 }, turn);
+      turn = game.turn;
+      game.move({ x: 2, y: 0 }, turn);
+      turn = game.turn;
+      game.move({ x: 0, y: 1 }, turn);
+      turn = game.turn;
+      game.move({ x: 0, y: 2 }, turn);
+      turn = game.turn;
+      game.move({ x: 1, y: 1 }, turn);
+      turn = game.turn;
+      game.move({ x: 1, y: 2 }, turn);
+      turn = game.turn;
+      game.move({ x: 2, y: 2 }, turn);
+      turn = game.turn;
+      game.move({ x: 1, y: 2 }, turn);
+      expect(game.isGameOver).toBe(true);
+      expect(game.winner).toBe(null);
+      expect(game.isTie).toBe(true);
     });
   });
 });

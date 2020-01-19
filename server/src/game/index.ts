@@ -1,6 +1,6 @@
 export default class Game {
   private static Games = new Map<string, Game>();
-  private static BOARD_SIZE: number = 3;
+  private static BOARD_SIZE = 3;
 
   public static getGame = (room: string): Game => Game.Games.get(room);
 
@@ -9,9 +9,9 @@ export default class Game {
     ["", "", ""],
     ["", "", ""],
   ];
-  private _isGameOver: boolean = false;
+  private _isGameOver = false;
   private _isTie: boolean = null;
-  private _moveCount: number = 0;
+  private _moveCount = 0;
   private _playerOne: string = null;
   private _playerTwo: string = null;
   private _turn: string = null;
@@ -57,7 +57,7 @@ export default class Game {
     return this._winner;
   }
 
-  private handleWinner(playerId: string) {
+  private handleWinner(playerId: string): void {
     this._winner = playerId;
     this._isGameOver = true;
   }
@@ -66,7 +66,7 @@ export default class Game {
     // Validate that the game is not over and that the currect player is making their turn.
     if (!this.isGameOver && this.turn === playerId) {
       // Validate that this position on the board is valid.
-      if (x < 3 && y < 3 && !this.board[x][y]) {
+      if (x < 3 && x >= 0 && y < 3 && y >= 0 && !this.board[x][y]) {
         const isPlayerOne: boolean = this.playerOne === this.turn;
         const symbol: string = isPlayerOne ? "X" : "O";
         const board: string[][] = this.board;
