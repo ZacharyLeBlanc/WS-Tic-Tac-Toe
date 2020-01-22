@@ -17,7 +17,7 @@
     "dev": "nodemon .",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prettier": "prettier --write src/*.ts src/**/*.ts",
-    "precommit": "yarn run prettier && yarn run lint && yarn run test:ci"
+    "precommit": "lint-staged && yarn run test:ci"
   },
   "dependencies": {
     "cookie-parser": "^1.4.4",
@@ -51,10 +51,18 @@
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-node": "^11.0.0",
     "jest": "^24.9.0",
+    "lint-staged": "^10.0.1",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --rule \"no-console: error\" --rule \"no-debugger: error\" --fix",
+      "prettier --write",
+      "git add"
+    ]
   }
 }
