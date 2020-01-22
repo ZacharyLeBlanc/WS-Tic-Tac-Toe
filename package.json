@@ -12,12 +12,10 @@
   "scripts": {
     "install": "yarn --cwd ./client install && yarn --cwd ./server install",
     "dev": "concurrently \"yarn --cwd ./server dev\" \"yarn --cwd ./client dev\"",
-    "prestart": "yarn --cwd ./client build",
     "start": "yarn --cwd ./server start",
     "test": "yarn --cwd ./server test && yarn --cwd ./client test",
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
-    "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit",
-    "heroku-postbuild": "cd client && yarn install && rollup -c"
+    "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
   },
   "dependencies": {
     "@material/drawer": "^4.0.0",
