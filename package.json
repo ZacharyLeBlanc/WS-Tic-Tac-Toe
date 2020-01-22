@@ -2,9 +2,6 @@
   "name": "tic-tac-toe",
   "version": "1.0.0",
   "description": "Tic tac toe app with websockets",
-  "engines": {
-    "node": "13.5.0"
-  },
   "main": "index.js",
   "author": "Zachary LeBlanc",
   "license": "MIT",
@@ -12,15 +9,13 @@
   "scripts": {
     "install": "yarn --cwd ./client install && yarn --cwd ./server install",
     "dev": "concurrently \"yarn --cwd ./server dev\" \"yarn --cwd ./client dev\"",
-    "start": "cd server && yarn start",
+    "prestart": "yarn --cwd ./client build",
+    "start": "yarn --cwd ./server start",
     "test": "yarn --cwd ./server test && yarn --cwd ./client test",
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
     "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
   },
-  "dependencies": {
-    "@material/drawer": "^4.0.0",
-    "@material/top-app-bar": "^4.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "concurrently": "^5.0.2",
     "husky": "^4.0.10"
