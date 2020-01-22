@@ -2,6 +2,9 @@
   "name": "tic-tac-toe",
   "version": "1.0.0",
   "description": "Tic tac toe app with websockets",
+  "engines": {
+    "node": "13.5.0"
+  },
   "main": "index.js",
   "author": "Zachary LeBlanc",
   "license": "MIT",
