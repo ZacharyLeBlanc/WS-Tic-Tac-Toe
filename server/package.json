@@ -60,7 +60,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --rule \"no-console: error\" --rule \"no-debugger: error\" --fix",
+      "eslint --fix",
       "prettier --write"
     ]
   }

@@ -1,5 +1,5 @@
-import Game from "../Game";
-export { default as RoomManager } from "./Manager";
+import Game from "../game";
+export { default as RoomManager } from "./manager";
 
 export enum RoomStatus {
   EMPTY,

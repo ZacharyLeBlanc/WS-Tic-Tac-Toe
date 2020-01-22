@@ -1,6 +1,6 @@
 import socketIo from "socket.io";
 import http from "http";
-import { RoomManager, Room } from "../Room";
+import { RoomManager, Room } from "../room";
 
 const handleJoinRoom = (
   io: socketIo.Server,
