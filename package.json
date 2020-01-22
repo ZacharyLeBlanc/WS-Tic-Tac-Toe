@@ -12,7 +12,7 @@
   "scripts": {
     "install": "yarn --cwd ./client install && yarn --cwd ./server install",
     "dev": "concurrently \"yarn --cwd ./server dev\" \"yarn --cwd ./client dev\"",
-    "start": "yarn --cwd ./server start",
+    "start": "cd server && yarn start",
     "test": "yarn --cwd ./server test && yarn --cwd ./client test",
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
     "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
