@@ -1,17 +1,23 @@
 <script>
   import { game } from "../stores/game.js";
-  import { room, leaveRoom } from "../stores/room.js";
+  import { room, leaveRoom, joinRoom } from "../stores/room.js";
   import { getSocket } from "../api/socket.js";
+  import { navigate } from "svelte-routing";
 
-  let socketId;
+  export let id;
+
+  joinRoom("room:" + id);
   getSocket().then(socket => {
     socketId = socket.id;
   });
+
+  let socketId;
+
   $: winnerText = $game.isTie
     ? "Tie Game!"
     : socketId === $game.winner
-      ? "You won!"
-      : "You lost!";
+    ? "You won!"
+    : "You lost!";
   $: turnText =
     socketId === $game.turn ? "It is your turn." : "It is not your turn.";
 
@@ -21,17 +27,26 @@
       if ($game.turn === socket.id) {
         socket.emit("game:move", { x: i, y: j });
       } else {
-        console.log("Not your turn");
+        // Not your turn
       }
     }
   };
 
   const handleLeaveRoom = () => {
     leaveRoom();
+    navigate("/rooms/");
   };
 </script>
 
 <style>
+  section {
+    text-align: center;
+  }
+
+  section > * {
+    margin: 1.5rem;
+  }
+
   .board-container {
     display: flex;
     justify-content: center;
@@ -67,6 +82,9 @@
         <!-- else content here -->
       {/each}
     </div>
-    <button on:click={handleLeaveRoom}>Leave Room</button>
+    <button on:click={handleLeaveRoom} class="mdc-button mdc-button--raised">
+      <span class="mdc-button__ripple" />
+      Leave Room
+    </button>
   </section>
 </div>

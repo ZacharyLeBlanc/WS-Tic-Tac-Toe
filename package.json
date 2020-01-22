@@ -15,7 +15,10 @@
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
     "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@material/drawer": "^4.0.0",
+    "@material/top-app-bar": "^4.0.0"
+  },
   "devDependencies": {
     "concurrently": "^5.0.2",
     "husky": "^4.0.10"

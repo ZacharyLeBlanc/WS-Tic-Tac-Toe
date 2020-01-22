@@ -63,7 +63,7 @@ const handleConnection = (
     if (room.game.isGameOver) {
       room.players.forEach((playerId: string) => {
         setTimeout(() => {
-          io.sockets.connected[playerId].emit("room:destroy", {
+          io.sockets.connected[playerId]?.emit("room:destroy", {
             data: "Room timed out",
           });
           io.sockets.connected[playerId]?.leave(room.id);

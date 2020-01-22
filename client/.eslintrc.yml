@@ -16,6 +16,10 @@ parserOptions:
   ecmaVersion: 2018
   sourceType: module
 rules:
+  no-console:
+    - error
+  no-debugger:
+    - error
   indent:
     - error
     - 2

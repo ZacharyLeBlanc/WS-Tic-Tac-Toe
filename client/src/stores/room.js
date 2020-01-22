@@ -24,7 +24,6 @@ getSocket().then(socket => {
   });
 
   socket.on("room:destroy", ({ data }) => {
-    console.log(data);
     room.set({ destroyed: true, message: data });
   });
 });

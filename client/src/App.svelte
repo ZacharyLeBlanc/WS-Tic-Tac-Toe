@@ -1,45 +1,22 @@
 <script>
-  import RoomList from "./components/RoomList/RoomList.svelte";
-  import Board from "./components/Board.svelte";
-  import { view, VIEWS } from "./stores/view.js";
-  import { room } from "./stores/room.js";
-
-  room.subscribe(roomValue => {
-    if (roomValue.destroyed) {
-      view.set(VIEWS.LIST);
-    }
-  });
+  import Header from "./components/Header/index.svelte";
+  import { Router, Route } from "svelte-routing";
+  import { Home, Room, Rooms } from "./routes";
 </script>
 
 <style>
   main {
-    height: 82vh;
-    margin: 2rem 2rem;
-  }
-
-  header {
-    position: sticky;
-    top: 0;
-    background-color: #21d4fd;
-    background-image: linear-gradient(19deg, #21d4fd 0%, #b721ff 100%);
-    height: 10vh;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 5px 16px #000;
+    padding-top: 64px;
   }
 </style>
 
-<header>
-  <h1>Tic Tac Toe</h1>
-</header>
-<main>
-  {#if $view === VIEWS.LIST}
-    <RoomList />
-  {:else if $view === VIEWS.ROOM}
-    <Board />
-  {:else}
-    <!-- else content here -->
-  {/if}
-</main>
+<Router>
+  <Header title="Tic Tac Toe" />
+  <main id="main-content" class="main-content">
+    <Route path="rooms/:id" let:params>
+      <Room id={params.id} />
+    </Route>
+    <Route path="rooms" component={Rooms} />
+    <Route path="/" component={Home} />
+  </main>
+</Router>

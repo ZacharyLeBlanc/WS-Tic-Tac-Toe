@@ -6,7 +6,6 @@ const socket = io("__API__", {
 
 const connectedSocket = new Promise(resolve => {
   socket.on("connect", () => {
-    console.log("connected");
     resolve(socket);
   });
 });

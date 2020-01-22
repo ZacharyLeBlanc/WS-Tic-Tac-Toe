@@ -6,7 +6,6 @@ export const game = writable({ board: [] });
 
 getSocket().then(socket => {
   socket.on("game", gameState => {
-    console.log(gameState);
     game.set(new GameMapper(gameState));
   });
 
