@@ -17,7 +17,7 @@
     "test": "yarn --cwd ./server test && yarn --cwd ./client test",
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
     "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit",
-    "heroku-postbuild": "yarn --cwd ./client build"
+    "heroku-postbuild": "cd client && yarn install && yarn build && cd ../server && yarn install && yarn build"
   },
   "dependencies": {
     "@material/drawer": "^4.0.0",
