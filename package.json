@@ -13,7 +13,8 @@
     "start": "yarn --cwd ./server start",
     "test": "yarn --cwd ./server test && yarn --cwd ./client test",
     "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
-    "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
+    "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit",
+    "heroku-postbuild": "yarn --cwd ./client build"
   },
   "dependencies": {
     "@material/drawer": "^4.0.0",
