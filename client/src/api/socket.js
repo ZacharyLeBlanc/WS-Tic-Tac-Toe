@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-const socket = io("__API__", {
+const socket = io("/", {
   path: "/api",
 });
 
