@@ -236,6 +236,11 @@ describe("Game Tests", () => {
       game.move({ x: 2, y: 2 }, turn);
       turn = game.turn;
       game.move({ x: 1, y: 2 }, turn);
+      turn = game.turn;
+      game.move({ x: 2, y: 1 }, turn);
+      game.board.flat().forEach((cell: string) => {
+        expect(cell).not.toBe("");
+      });
       expect(game.isGameOver).toBe(true);
       expect(game.winner).toBe(null);
       expect(game.isTie).toBe(true);

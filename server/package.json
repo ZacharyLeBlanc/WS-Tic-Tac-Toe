@@ -1,6 +1,6 @@
 {
   "name": "ttt-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tic tac toe app with websockets",
   "main": "dist/index.js",
   "author": "Zachary LeBlanc",
@@ -45,12 +45,12 @@
     "@types/socket.io": "^2.1.4",
     "@typescript-eslint/eslint-plugin": "^2.15.0",
     "@typescript-eslint/parser": "^2.15.0",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^25.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-node": "^11.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "lint-staged": "^10.0.1",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
@@ -60,7 +60,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --rule 'no-console: 2' --rule 'no-debugger: 2' --fix",
       "prettier --write"
     ]
   }
