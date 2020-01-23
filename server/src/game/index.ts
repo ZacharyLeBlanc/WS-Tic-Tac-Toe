@@ -72,7 +72,6 @@ export default class Game {
         const board: string[][] = this.board;
         // Make players turn
         board[x][y] = symbol;
-        this._moveCount++;
         // Determine if there is a winner.
         // Columns
         for (let i = 0; i < Game.BOARD_SIZE; i++) {
@@ -126,6 +125,7 @@ export default class Game {
         }
         // Change turns
         this._turn = isPlayerOne ? this.playerTwo : this.playerOne;
+        this._moveCount++;
       }
     }
     return this;
