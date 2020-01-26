@@ -5,17 +5,19 @@
   "main": "index.js",
   "author": "Zachary LeBlanc",
   "license": "MIT",
-  "private": false,
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "install": "yarn --cwd ./client install && yarn --cwd ./server install",
-    "dev": "concurrently \"yarn --cwd ./server dev\" \"yarn --cwd ./client dev\"",
-    "prestart": "yarn --cwd ./client build",
-    "start": "yarn --cwd ./server start",
-    "test": "yarn --cwd ./server test && yarn --cwd ./client test",
-    "test:ci": "yarn --cwd ./server test:ci && yarn --cwd ./client test:ci",
-    "precommit": "yarn --cwd ./server precommit && yarn --cwd ./client precommit"
+    "dev": "concurrently \"yarn workspace server dev\" \"yarn workspace client dev\"",
+    "prestart": "yarn workspace client build",
+    "start": "yarn workspace server start",
+    "test": "yarn workspace server test && yarn workspace client test",
+    "test:ci": "yarn workspace server test:ci && yarn workspace client test:ci",
+    "precommit": "yarn workspace server precommit && yarn workspace client precommit"
   },
-  "dependencies": {},
   "devDependencies": {
     "concurrently": "^5.0.2",
     "husky": "^4.0.10"

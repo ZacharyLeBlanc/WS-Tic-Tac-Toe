@@ -14,6 +14,11 @@ export const leaveRoom = async () => {
   socket.emit("room:leave");
 };
 
+export const playAgain = async () => {
+  const socket = await getSocket();
+  socket.emit("game:rejoin");
+};
+
 getSocket().then(socket => {
   socket.on("room:get", ({ data }) => {
     rooms.set(data);
