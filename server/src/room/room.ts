@@ -46,6 +46,7 @@ export default class Room {
     this.endGameTimer = 60;
     this.game?.reset();
     this.endGameInterval = null;
+    this.rejoinedPlayers = ["", ""];
   }
 
   public endGame(intervalCallback: Function): Promise<[string, string]> {
@@ -66,29 +67,34 @@ export default class Room {
     });
   }
 
-  public playAgain(playerId: string): void {
-    if (
-      this.players.includes(playerId) &&
-      !this.rejoinedPlayers.includes(playerId)
-    ) {
-      const index: number = this.rejoinedPlayers.indexOf("");
-      if (~index) {
-        this.rejoinedPlayers[index] = playerId;
-      }
-      if (!~this.rejoinedPlayers.indexOf("")) {
-        this.endGameTimer = 60;
-        this.game?.reset();
-        this.game?.start(this.rejoinedPlayers);
-        if (this.endGameInterval) {
-          clearInterval(this.endGameInterval);
-          this.endGameInterval = null;
+  public playAgain(playerId: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (
+        this.players.includes(playerId) &&
+        !this.rejoinedPlayers.includes(playerId)
+      ) {
+        const index: number = this.rejoinedPlayers.indexOf("");
+        if (~index) {
+          this.rejoinedPlayers[index] = playerId;
         }
+        if (!~this.rejoinedPlayers.indexOf("")) {
+          this.endGameTimer = 60;
+          this.game?.reset();
+          this.game?.start(this.rejoinedPlayers);
+          this.rejoinedPlayers = ["", ""];
+          if (this.endGameInterval) {
+            clearInterval(this.endGameInterval);
+            this.endGameInterval = null;
+          }
+        }
+        resolve(playerId);
       }
-    }
+    });
   }
 
   public startGame(): void {
     if (this.getStatus() === RoomStatus.FULL) {
+      this.rejoinedPlayers = ["", ""];
       this.game.start(this.players);
     }
   }

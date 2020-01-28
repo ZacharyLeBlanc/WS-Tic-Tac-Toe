@@ -6,7 +6,7 @@ const handleConnection = (
   socket: socketIo.Socket,
   roomManager: RoomManager,
 ): void => {
-  socket.emit("room:get", { data: roomManager.getRooms() });
+  socket.emit("room:getAll", { data: roomManager.getRooms() });
 
   socket.on("room:join", (data: { roomId: string }) =>
     roomManager.joinRoom(data.roomId, socket),

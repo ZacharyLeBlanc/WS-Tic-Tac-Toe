@@ -1,5 +1,6 @@
 <script>
   import Header from "./components/Header/index.svelte";
+  import SnackBar from "./components/SnackBar/index.svelte";
   import { Router, Route } from "svelte-routing";
   import { Home, Room, Rooms } from "./routes";
 </script>
@@ -19,4 +20,5 @@
     <Route path="rooms" component={Rooms} />
     <Route path="/" component={Home} />
   </main>
+  <SnackBar />
 </Router>

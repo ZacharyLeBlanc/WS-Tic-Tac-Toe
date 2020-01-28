@@ -20,11 +20,11 @@ export const playAgain = async () => {
 };
 
 getSocket().then(socket => {
-  socket.on("room:get", ({ data }) => {
+  socket.on("room:getAll", ({ data }) => {
     rooms.set(data);
   });
 
-  socket.on("room:joined", ({ data }) => {
+  socket.on("room", ({ data }) => {
     room.set(data);
   });
 

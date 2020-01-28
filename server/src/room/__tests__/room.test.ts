@@ -73,7 +73,7 @@ describe("Room Tests", () => {
       room.playAgain("player_one");
       expect(room.rejoinedPlayers).toStrictEqual(["player_one", ""]);
       room.playAgain("player_two");
-      expect(room.rejoinedPlayers).toStrictEqual(["player_one", "player_two"]);
+      expect(room.rejoinedPlayers).toStrictEqual(["", ""]);
       expect(room.endGameInterval).toBeNull();
     });
   });

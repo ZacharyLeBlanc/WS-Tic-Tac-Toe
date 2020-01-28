@@ -1,8 +1,10 @@
 <script>
-  import { game, timer } from "../stores/game.js";
+  import { game } from "../stores/game.js";
   import { room, leaveRoom, joinRoom, playAgain } from "../stores/room.js";
   import { getSocket } from "../api/socket.js";
   import { navigate } from "svelte-routing";
+  import { snackBar } from "../components/SnackBar/index.svelte";
+
   import Button from "../components/Button/index.svelte";
 
   export let id;
@@ -16,6 +18,7 @@
 
   room.subscribe(newValue => {
     if (newValue.destroyed) {
+      snackBar.open();
       room.set({ ...newValue, destroyed: false });
       navigate("/rooms/");
     }
@@ -28,6 +31,11 @@
     : "You lost!";
   $: turnText =
     socketId === $game.turn ? "It is your turn." : "It is not your turn.";
+  $: rematch =
+    $room.rejoinedPlayers &&
+    $room.rejoinedPlayers.some(player => {
+      if (player !== "" && player !== socketId) return true;
+    });
 
   const handleClick = async (i, j) => {
     if (!$game.isGameOver) {
@@ -79,7 +87,8 @@
       {#if $room.status === 1}
         <h3>Waiting for another player to connect</h3>
       {:else if $game.isGameOver}
-        Game Over: {winnerText} Room will timeout in {$timer} seconds
+        Game Over: {winnerText} Room will timeout in {$room.endGameTimer}
+        seconds
       {:else}{turnText}{/if}
     </header>
     <div class="board-container">
@@ -95,9 +104,14 @@
         <!-- else content here -->
       {/each}
     </div>
-    {#if $game.isGameOver}
-      <Button onClick={handlePlayAgain}>Play Again</Button>
-    {/if}
-    <Button onClick={handleLeaveRoom}>Leave Room</Button>
+    <div>
+      {#if $game.isGameOver}
+        <Button onClick={handlePlayAgain}>Play Again</Button>
+      {/if}
+      <Button onClick={handleLeaveRoom}>Leave Room</Button>
+    </div>
+    <div>
+      {#if rematch}Your opponent wants a rematch!{/if}
+    </div>
   </section>
 </div>

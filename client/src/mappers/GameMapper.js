@@ -1,5 +1,13 @@
 export default class {
-  constructor(gameState) {
+  constructor(
+    gameState = {
+      _board: [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ],
+    },
+  ) {
     const {
       _board,
       _isGameOver,

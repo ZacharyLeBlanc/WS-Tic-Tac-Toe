@@ -25,19 +25,16 @@ export default class RoomManager {
     roomId: string,
     socket: SocketIO.Socket,
   ): Promise<void> => {
-    socket.emit("room:status", "Joining...");
     const room: Room | undefined = this.rooms.get(roomId);
     if (room) {
       const joinedRoom: Room = await room.join(socket.id);
       socket.join(joinedRoom.id, () => {
         joinedRoom.startGame();
         this.players.set(socket.id, room.id);
-        this.io.emit("room:get", { data: this.getRooms() });
-        socket.emit("room:status", "Joined room");
-        this.io.to(room.id).emit("room:joined", { data: room });
-        if (room.game.started) {
-          this.io.to(room.id).emit("game", room.game);
-        }
+        this.io.emit("room:getAll", { data: this.getRooms() });
+        this.io
+          .to(room.id)
+          .emit("room", { data: { ...room, endGameInterval: null } });
       });
     }
   };
@@ -57,7 +54,7 @@ export default class RoomManager {
       this.io.sockets.connected[playerId]?.leave(room.id);
     });
     room?.reset();
-    this.io.emit("room:get", { data: this.getRooms() });
+    this.io.emit("room:getAll", { data: this.getRooms() });
   };
 
   public move = (
@@ -66,11 +63,16 @@ export default class RoomManager {
   ): void => {
     const room: Room | undefined = this.getRoomByPlayer(socket.id);
     if (room) {
-      this.io.to(room.id).emit("game", room.game?.move(data, socket.id));
+      room.game?.move(data, socket.id);
+      this.io
+        .to(room.id)
+        .emit("room", { data: { ...room, endGameInterval: null } });
       if (room.game?.isGameOver) {
         room
           .endGame(() => {
-            this.io.to(room.id).emit("game:timer", room.endGameTimer);
+            this.io
+              .to(room.id)
+              .emit("room", { data: { ...room, endGameInterval: null } });
           })
           .then((players: [string, string]) => {
             players.forEach((playerId: string) => {
@@ -79,17 +81,19 @@ export default class RoomManager {
               });
               this.io.sockets.connected[playerId]?.leave(room.id);
             });
-            this.io.emit("room:get", { data: this.getRooms() });
+            this.io.emit("room:getAll", { data: this.getRooms() });
           });
       }
     }
   };
 
-  public rejoin = (socket: SocketIO.Socket): void => {
+  public rejoin = async (socket: SocketIO.Socket): Promise<void> => {
     const room: Room | undefined = this.getRoomByPlayer(socket.id);
     if (room) {
-      room.playAgain(socket.id);
-      this.io.to(room.id).emit("game", room.game);
+      await room.playAgain(socket.id);
+      this.io
+        .to(room.id)
+        .emit("room", { data: { ...room, endGameInterval: null } });
     }
   };
 }
