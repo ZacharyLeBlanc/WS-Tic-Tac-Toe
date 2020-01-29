@@ -1,5 +1,6 @@
 import Game from "../game";
 import RoomStatus from "./status";
+import RoomDTO from "./roomDTO";
 
 const STATUS = [RoomStatus.EMPTY, RoomStatus.WAITING, RoomStatus.FULL];
 
@@ -68,7 +69,7 @@ export default class Room {
   }
 
   public playAgain(playerId: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       if (
         this.players.includes(playerId) &&
         !this.rejoinedPlayers.includes(playerId)
@@ -97,5 +98,9 @@ export default class Room {
       this.rejoinedPlayers = ["", ""];
       this.game.start(this.players);
     }
+  }
+
+  public toDTO(): RoomDTO {
+    return new RoomDTO(this);
   }
 }
