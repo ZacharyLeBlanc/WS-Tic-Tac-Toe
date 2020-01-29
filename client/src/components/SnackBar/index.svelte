@@ -1,5 +1,9 @@
 <script context="module">
-  export let snackBar;
+  let snackBar;
+
+  export function getSnackBar() {
+    return snackBar;
+  }
 </script>
 
 <script>
@@ -13,13 +17,9 @@
 
 <div class="mdc-snackbar">
   <div class="mdc-snackbar__surface">
-    <div class="mdc-snackbar__label" role="status" aria-live="polite">
-      Can't send photo. Retry in 5 seconds.
-    </div>
+    <div class="mdc-snackbar__label" role="status" aria-live="polite" />
     <div class="mdc-snackbar__actions">
-      <button type="button" class="mdc-button mdc-snackbar__action">
-        Retry
-      </button>
+      <button type="button" class="mdc-button mdc-snackbar__action" />
     </div>
   </div>
 </div>

@@ -3,11 +3,12 @@
   import { room, leaveRoom, joinRoom, playAgain } from "../stores/room.js";
   import { getSocket } from "../api/socket.js";
   import { navigate } from "svelte-routing";
-  import { snackBar } from "../components/SnackBar/index.svelte";
+  import { getSnackBar } from "../components/SnackBar/index.svelte";
 
   import Button from "../components/Button/index.svelte";
 
   export let id;
+  let shownMessage = false;
 
   joinRoom("room:" + id);
   getSocket().then(socket => {
@@ -17,8 +18,32 @@
   let socketId;
 
   room.subscribe(newValue => {
+    if (
+      newValue.rejoinedPlayers &&
+      newValue.rejoinedPlayers.some(player => {
+        if (player !== "" && player !== socketId) return true;
+      })
+    ) {
+      const snackBar = getSnackBar();
+      if (snackBar && !snackBar.isOpen && !shownMessage) {
+        snackBar.labelText = "Your opponent watnts a rematch!";
+        snackBar.actionButtonText = "Play Again";
+        snackBar.foundation_.handleActionButtonClick = function() {
+          playAgain();
+          snackBar.close();
+          shownMessage = false;
+        };
+        shownMessage = true;
+        snackBar.open();
+      }
+    }
     if (newValue.destroyed) {
-      snackBar.open();
+      const snackBar = getSnackBar();
+      if (snackBar) {
+        snackBar.labelText = $room.message;
+        snackBar.actionButtonText = "";
+        snackBar.open();
+      }
       room.set({ ...newValue, destroyed: false });
       navigate("/rooms/");
     }
