@@ -1,10 +1,14 @@
 <script>
   import { game } from "../stores/game.js";
-  import { room, leaveRoom, joinRoom } from "../stores/room.js";
+  import { room, leaveRoom, joinRoom, playAgain } from "../stores/room.js";
   import { getSocket } from "../api/socket.js";
   import { navigate } from "svelte-routing";
+  import { getSnackBar } from "../components/SnackBar/index.svelte";
+
+  import Button from "../components/Button/index.svelte";
 
   export let id;
+  let shownMessage = false;
 
   joinRoom("room:" + id);
   getSocket().then(socket => {
@@ -13,6 +17,38 @@
 
   let socketId;
 
+  room.subscribe(newValue => {
+    if (
+      newValue.rejoinedPlayers &&
+      newValue.rejoinedPlayers.some(player => {
+        if (player !== "" && player !== socketId) return true;
+      })
+    ) {
+      const snackBar = getSnackBar();
+      if (snackBar && !snackBar.isOpen && !shownMessage) {
+        snackBar.labelText = "Your opponent watnts a rematch!";
+        snackBar.actionButtonText = "Play Again";
+        snackBar.foundation_.handleActionButtonClick = function() {
+          playAgain();
+          snackBar.close();
+          shownMessage = false;
+        };
+        shownMessage = true;
+        snackBar.open();
+      }
+    }
+    if (newValue.destroyed) {
+      const snackBar = getSnackBar();
+      if (snackBar) {
+        snackBar.labelText = $room.message;
+        snackBar.actionButtonText = "";
+        snackBar.open();
+      }
+      room.set({ ...newValue, destroyed: false });
+      navigate("/rooms/");
+    }
+  });
+
   $: winnerText = $game.isTie
     ? "Tie Game!"
     : socketId === $game.winner
@@ -20,6 +56,11 @@
     : "You lost!";
   $: turnText =
     socketId === $game.turn ? "It is your turn." : "It is not your turn.";
+  $: rematch =
+    $room.rejoinedPlayers &&
+    $room.rejoinedPlayers.some(player => {
+      if (player !== "" && player !== socketId) return true;
+    });
 
   const handleClick = async (i, j) => {
     if (!$game.isGameOver) {
@@ -34,7 +75,10 @@
 
   const handleLeaveRoom = () => {
     leaveRoom();
-    navigate("/rooms/");
+  };
+
+  const handlePlayAgain = () => {
+    playAgain();
   };
 </script>
 
@@ -67,7 +111,10 @@
       <h2>You have joined a room.</h2>
       {#if $room.status === 1}
         <h3>Waiting for another player to connect</h3>
-      {:else if $game.isGameOver}Game Over: {winnerText}{:else}{turnText}{/if}
+      {:else if $game.isGameOver}
+        Game Over: {winnerText} Room will timeout in {$room.endGameTimer}
+        seconds
+      {:else}{turnText}{/if}
     </header>
     <div class="board-container">
       {#each $game.board as col, i}
@@ -82,9 +129,14 @@
         <!-- else content here -->
       {/each}
     </div>
-    <button on:click={handleLeaveRoom} class="mdc-button mdc-button--raised">
-      <span class="mdc-button__ripple" />
-      Leave Room
-    </button>
+    <div>
+      {#if $game.isGameOver}
+        <Button onClick={handlePlayAgain}>Play Again</Button>
+      {/if}
+      <Button onClick={handleLeaveRoom}>Leave Room</Button>
+    </div>
+    <div>
+      {#if rematch}Your opponent wants a rematch!{/if}
+    </div>
   </section>
 </div>

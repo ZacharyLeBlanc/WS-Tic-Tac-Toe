@@ -1,15 +1,5 @@
-import { writable } from "svelte/store";
-import { getSocket } from "../api/socket.js";
+import { derived } from "svelte/store";
 import GameMapper from "../mappers/GameMapper";
+import { room } from "./room.js";
 
-export const game = writable({ board: [] });
-
-getSocket().then(socket => {
-  socket.on("game", gameState => {
-    game.set(new GameMapper(gameState));
-  });
-
-  socket.on("room:destroy", () => {
-    game.set({ board: [] });
-  });
-});
+export const game = derived(room, $room => new GameMapper($room.game));

@@ -52,9 +52,9 @@ const onError = (error: ServerError): void => {
 };
 
 const onListening = (): void => {
-  const addr: string | AddressInfo = server.address();
+  const addr: string | AddressInfo | null = server.address();
   const bind: string =
-    typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+    typeof addr === "string" ? "pipe " + addr : "port " + addr?.port;
   debug("Listening on " + bind);
 };
 

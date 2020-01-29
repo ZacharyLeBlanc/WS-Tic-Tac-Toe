@@ -2,7 +2,8 @@ export default class Game {
   private static Games = new Map<string, Game>();
   private static BOARD_SIZE = 3;
 
-  public static getGame = (room: string): Game => Game.Games.get(room);
+  public static getGame = (room: string): Game | undefined =>
+    Game.Games.get(room);
 
   private _board: string[][] = [
     ["", "", ""],
@@ -10,18 +11,15 @@ export default class Game {
     ["", "", ""],
   ];
   private _isGameOver = false;
-  private _isTie: boolean = null;
+  private _isTie = false;
   private _moveCount = 0;
-  private _playerOne: string = null;
-  private _playerTwo: string = null;
-  private _turn: string = null;
-  private _winner: string = null;
+  private _playerOne = "";
+  private _playerTwo = "";
+  private _turn = "";
+  private _winner = "";
+  private _started = false;
 
-  constructor(players: [string, string], room: string) {
-    const randomPlayerIndex: number = Math.floor(Math.random() * 2);
-    this._playerOne = players[randomPlayerIndex];
-    this._turn = players[randomPlayerIndex];
-    this._playerTwo = players[+!randomPlayerIndex];
+  constructor(room: string) {
     Game.Games.set(room, this);
   }
 
@@ -57,9 +55,23 @@ export default class Game {
     return this._winner;
   }
 
+  get started(): boolean {
+    return this._started;
+  }
+
   private handleWinner(playerId: string): void {
     this._winner = playerId;
     this._isGameOver = true;
+  }
+
+  public start(players: [string, string]): void {
+    if (!this._started) {
+      const randomPlayerIndex: number = Math.floor(Math.random() * 2);
+      this._playerOne = players[randomPlayerIndex];
+      this._turn = players[randomPlayerIndex];
+      this._playerTwo = players[+!randomPlayerIndex];
+      this._started = true;
+    }
   }
 
   public move({ x, y }: { x: number; y: number }, playerId: string): Game {
@@ -129,5 +141,21 @@ export default class Game {
       }
     }
     return this;
+  }
+
+  public reset(): void {
+    this._board = [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ];
+    this._isGameOver = false;
+    this._isTie = false;
+    this._moveCount = 0;
+    this._playerOne = "";
+    this._playerTwo = "";
+    this._turn = "";
+    this._winner = "";
+    this._started = false;
   }
 }

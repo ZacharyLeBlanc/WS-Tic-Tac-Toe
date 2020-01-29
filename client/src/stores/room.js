@@ -14,12 +14,17 @@ export const leaveRoom = async () => {
   socket.emit("room:leave");
 };
 
+export const playAgain = async () => {
+  const socket = await getSocket();
+  socket.emit("game:rejoin");
+};
+
 getSocket().then(socket => {
-  socket.on("room:get", ({ data }) => {
+  socket.on("room:getAll", ({ data }) => {
     rooms.set(data);
   });
 
-  socket.on("room:joined", ({ data }) => {
+  socket.on("room", ({ data }) => {
     room.set(data);
   });
 
