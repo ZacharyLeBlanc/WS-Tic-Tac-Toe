@@ -1,4 +1,5 @@
 import Room from "./room";
+import RoomDTO from "./roomDTO";
 
 export default class RoomManager {
   private io: SocketIO.Server;
@@ -17,8 +18,10 @@ export default class RoomManager {
     return this.rooms.get(this.players.get(playerId) ?? "");
   };
 
-  public getRooms = (): Room[] => {
-    return Array.from(this.rooms.values());
+  public getRooms = (): RoomDTO[] => {
+    return Array.from(this.rooms.values()).map(room => {
+      return room.toDTO();
+    });
   };
 
   public joinRoom = async (
@@ -32,9 +35,7 @@ export default class RoomManager {
         joinedRoom.startGame();
         this.players.set(socket.id, room.id);
         this.io.emit("room:getAll", { data: this.getRooms() });
-        this.io
-          .to(room.id)
-          .emit("room", { data: { ...room, endGameInterval: null } });
+        this.io.to(room.id).emit("room", { data: room.toDTO() });
       });
     }
   };
@@ -64,15 +65,11 @@ export default class RoomManager {
     const room: Room | undefined = this.getRoomByPlayer(socket.id);
     if (room) {
       room.game?.move(data, socket.id);
-      this.io
-        .to(room.id)
-        .emit("room", { data: { ...room, endGameInterval: null } });
+      this.io.to(room.id).emit("room", { data: room.toDTO() });
       if (room.game?.isGameOver) {
         room
           .endGame(() => {
-            this.io
-              .to(room.id)
-              .emit("room", { data: { ...room, endGameInterval: null } });
+            this.io.to(room.id).emit("room", { data: room.toDTO() });
           })
           .then((players: [string, string]) => {
             players.forEach((playerId: string) => {
@@ -91,9 +88,7 @@ export default class RoomManager {
     const room: Room | undefined = this.getRoomByPlayer(socket.id);
     if (room) {
       await room.playAgain(socket.id);
-      this.io
-        .to(room.id)
-        .emit("room", { data: { ...room, endGameInterval: null } });
+      this.io.to(room.id).emit("room", { data: room.toDTO() });
     }
   };
 }

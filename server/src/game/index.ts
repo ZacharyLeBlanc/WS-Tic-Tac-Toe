@@ -1,3 +1,5 @@
+import GameDTO from "./gameDTO";
+
 export default class Game {
   private static Games = new Map<string, Game>();
   private static BOARD_SIZE = 3;
@@ -157,5 +159,9 @@ export default class Game {
     this._turn = "";
     this._winner = "";
     this._started = false;
+  }
+
+  public toDTO(): GameDTO {
+    return new GameDTO(this);
   }
 }
